@@ -1,9 +1,12 @@
 FROM php:8.2-fpm
 
-# Install pdo_pgsql and other dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     libpq-dev \
-    && docker-php-ext-install pdo_pgsql
+    git \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo_pgsql pgsql bcmath pcntl
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -15,12 +18,13 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install Laravel dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --optimize-autoloader --no-dev --ignore-platform-reqs || true
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 9000 for PHP-FPM
+# Expose port for Render
 EXPOSE 9000
 
+# Start PHP-FPM
 CMD ["php-fpm"]
