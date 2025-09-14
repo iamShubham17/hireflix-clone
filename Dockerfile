@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
-    && docker-php-ext-install pdo_pgsql pgsql bcmath pcntl
-
+    && docker-php-ext-install pdo_pgsql pgsql bcmath pcntl \
+    && php -m | grep -E 'pdo_pgsql|pgsql'
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
